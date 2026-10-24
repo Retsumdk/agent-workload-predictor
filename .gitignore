@@ -1,5 +1,21 @@
+# dependencies and build output
 node_modules/
 dist/
+
+# environment and secrets
 .env
+.env.*
+
+# logs
 *.log
+npm-debug.log*
+
+# coverage
 coverage/
+
+# lockfiles (single-source of truth is package.json; installs are validated in CI)
+bun.lockb
+package-lock.json
+
+# editors
+.DS_Store

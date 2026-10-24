@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Typecheck (src)
+        run: bunx tsc
+      - name: Typecheck (src + tests)
+        run: bunx tsc -p tsconfig.test.json
+      - name: Tests
+        run: bun test
+      - name: Build
+        run: bun run build
+      - name: Demo determinism
+        run: |
+          bun src/cli-run.ts demo > /tmp/demo-a.txt
+          bun src/cli-run.ts demo > /tmp/demo-b.txt
+          diff /tmp/demo-a.txt /tmp/demo-b.txt
+      - name: CLI smoke (forecast from JSONL)
+        run: |
+          bun src/cli-run.ts demo | head -1
+          echo '{"kind":"summarize","startedAt":1791500000000,"durationMs":1800,"cpuMs":400,"memMb":64}' > /tmp/h.jsonl
+          echo '{"kind":"summarize","startedAt":1791503600000,"durationMs":1900,"cpuMs":420,"memMb":66}' >> /tmp/h.jsonl
+          echo '{"kind":"summarize","startedAt":1791507200000,"durationMs":1750,"cpuMs":390,"memMb":63}' >> /tmp/h.jsonl
+          bun src/cli-run.ts predict --history /tmp/h.jsonl --now 1791510800000
+      - name: Package install check (clean npm install of the packed tarball)
+        run: |
+          bun pm pack
+          cd "$HOME" && rm -rf awp-pack-check && mkdir awp-pack-check && cd awp-pack-check
+          npm init -y >/dev/null
+          npm install "$OLDPWD/Retsumdk-agent-workload-predictor-1.0.0.tgz" >/dev/null 2>&1 || \
+            npm install "$OLDPWD"/*.tgz
+          node -e "const m = require('agent-workload-predictor'); if (typeof m.WorkloadPredictor !== 'function') { throw new Error('bad export'); } console.log('pack-install OK');"

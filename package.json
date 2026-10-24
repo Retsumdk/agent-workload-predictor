@@ -1,14 +1,44 @@
 {
   "name": "agent-workload-predictor",
-  "description": "Workload prediction service that learns task duration and resource demand from execution history",
   "version": "1.0.0",
+  "description": "Workload prediction service that learns task duration and resource demand from execution history",
   "type": "module",
-  "scripts": {
-    "test": "bun test",
-    "build": "tsc"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
-  "dependencies": {
-    "commander": "^11.1.0"
+  "bin": {
+    "awp": "./dist/cli-run.js"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "prepare": "tsc",
+    "build": "tsc",
+    "test": "bun test",
+    "demo": "bun src/cli-run.ts demo"
+  },
+  "keywords": [
+    "ai-agents",
+    "workload-prediction",
+    "forecasting",
+    "capacity-planning",
+    "observability",
+    "time-series",
+    "typescript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Retsumdk/agent-workload-predictor.git"
+  },
+  "bugs": "https://github.com/Retsumdk/agent-workload-predictor/issues",
+  "homepage": "https://github.com/Retsumdk/agent-workload-predictor#readme",
+  "engines": {
+    "bun": ">=1.0.0"
   },
   "devDependencies": {
     "bun-types": "^1.0.0",

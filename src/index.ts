@@ -1,51 +1,19 @@
-#!/usr/bin/env bun
-/**
- * agent-workload-predictor - Workload prediction service that learns task duration and resource demand from execution history
- * Built by Retsumdk
- */
+/** Public API for agent-workload-predictor. */
 
-import { Command } from "commander";
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
-
-interface Config {
-  apiKey?: string;
-  baseUrl: string;
-  timeout: number;
-  retries: number;
-}
-
-const DEFAULTS: Config = {
-  baseUrl: "https://api.example.com",
-  timeout: 30000,
-  retries: 3,
-};
-
-function loadConfig(): Config {
-  const cfgPath = join(process.cwd(), "config.json");
-  if (existsSync(cfgPath)) {
-    try {
-      return { ...DEFAULTS, ...JSON.parse(readFileSync(cfgPath, "utf-8")) };
-    } catch { /* ignore */ }
-  }
-  return { ...DEFAULTS };
-}
-
-async function main(cfg: Config) {
-  console.log(`[${name}] Connected to ${cfg.baseUrl}`);
-  console.log(`[${name}] Timeout: ${cfg.timeout}ms | Retries: ${cfg.retries}`);
-  // TODO: implement your logic here
-  console.log(`[${name}] Done.`);
-}
-
-const program = new Command();
-program.name("agent-workload-predictor").description("Workload prediction service that learns task duration and resource demand from execution history").version("1.0.0")
-  .option("-c, --config <path>", "Config file path", "config.json")
-  .option("-v, --verbose", "Verbose mode")
-  .action(async (opts) => {
-    const cfg = loadConfig();
-    if (opts.verbose) console.log("Verbose mode on");
-    try { await main(cfg); }
-    catch (e) { console.error(`Error: ${e}`); process.exit(1); }
-  });
-program.parse(process.argv);
+export type {
+  DurationPrediction,
+  ForecastOptions,
+  ForecastWindow,
+  HistorySnapshot,
+  ResourcePrediction,
+  TaskRecord,
+} from "./types.js";
+export { WorkloadError, exitCodeOf, type ErrorCode } from "./errors.js";
+export { SystemClock, ManualClock, type Clock } from "./clock.js";
+export { ExecutionHistory } from "./store.js";
+export { DurationPredictor, ResourcePredictor, type PredictorOptions } from "./predictor.js";
+export { mape, mean, quantile, weightedMean, weightedQuantile, recencyWeight } from "./stats.js";
+export { WorkloadForecaster, type ForecasterOptions } from "./forecaster.js";
+export { WorkloadPredictor, type WorkloadPredictorOptions } from "./engine.js";
+export { runDemo, buildScenario } from "./demo.js";
+export { runCli, usage, type CliInvocation, type CliResult } from "./cli.js";
