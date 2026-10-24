@@ -38,7 +38,7 @@ jobs:
       - name: Package install check (clean npm install of the packed tarball)
         run: |
           bun pm pack
-          tarball="$GITHUB_WORKSPACE/Retsumdk-agent-workload-predictor-1.0.0.tgz"
+          tarball="$GITHUB_WORKSPACE/agent-workload-predictor-1.0.0.tgz"
           cd "$HOME" && rm -rf awp-pack-check && mkdir awp-pack-check && cd awp-pack-check
           npm init -y >/dev/null
           npm install "$tarball"
