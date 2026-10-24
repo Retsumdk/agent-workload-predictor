@@ -38,8 +38,8 @@ jobs:
       - name: Package install check (clean npm install of the packed tarball)
         run: |
           bun pm pack
+          tarball="$GITHUB_WORKSPACE/Retsumdk-agent-workload-predictor-1.0.0.tgz"
           cd "$HOME" && rm -rf awp-pack-check && mkdir awp-pack-check && cd awp-pack-check
           npm init -y >/dev/null
-          npm install "$OLDPWD/Retsumdk-agent-workload-predictor-1.0.0.tgz" >/dev/null 2>&1 || \
-            npm install "$OLDPWD"/*.tgz
+          npm install "$tarball"
           node -e "const m = require('agent-workload-predictor'); if (typeof m.WorkloadPredictor !== 'function') { throw new Error('bad export'); } console.log('pack-install OK');"
